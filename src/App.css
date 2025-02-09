@@ -1,10 +1,10 @@
 table, th, td {
   border:1px solid black;
 }
-th {
+thead {
   background-color: lightgray;;
 }
-td {
+tbody {
   background-color: lightblue;
 }
 table {
@@ -17,4 +17,20 @@ table {
 }
 .multiSelect {
   margin: 5px;
+}
+.multiSelectContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.searchSectionContainer {
+  display: flex;
+  margin: 10px;
+  width: 50%;
+  justify-content: space-between;
+  align-items: center;
+}
+.inputSearch {
+  height: 30px;
+  width: 200px;
 }

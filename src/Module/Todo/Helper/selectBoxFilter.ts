@@ -6,9 +6,9 @@ const helper = (status: boolean): string => {
 
 }
 
-export const selectBoxFilter = (selected: string, data: ITodo[]): ITodo[] => {
-  if (!selected.length || !Array.isArray(data) ) return [];
-  if (selected === 'all') return data;
+export const selectBoxFilter = (selectBoxValue: string, inputSearchValue: string, data: ITodo[]): ITodo[] => {
+  if (!selectBoxValue.length || !Array.isArray(data) ) return [];
+  if (selectBoxValue === 'all') return data;
 
-  return data.filter((item) => helper(item.completed) === selected);
+  return data.filter((item) => item.title.toLowerCase().includes(inputSearchValue.toLowerCase()) && helper(item.completed) === selectBoxValue);
 }
