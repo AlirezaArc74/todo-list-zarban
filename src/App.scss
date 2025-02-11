@@ -1,0 +1,52 @@
+table,
+th,
+td {
+  border: 1px solid black;
+  padding: 5px;
+}
+thead {
+  background-color: lightgray;
+}
+tbody {
+  background-color: lightskyblue;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.header {
+  display: flex;
+  justify-content: center;
+}
+
+.searchSectionContainer {
+  display: flex;
+  margin: 10px;
+  width: 50%;
+  justify-content: space-between;
+  align-items: center;
+
+  .multiSelectContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    .multiSelect {
+      border: 1px solid tomato;
+      background: thistle;
+      margin: 5px;
+      padding: 5px;
+    }
+  }
+  .inputSearchContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .inputSearch {
+      height: 30px;
+      width: 200px;
+      border: 1px solid tomato;
+      background: thistle;
+    }
+  }
+}

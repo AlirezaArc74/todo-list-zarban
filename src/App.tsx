@@ -1,89 +1,139 @@
-import React, {useEffect, useState} from 'react';
-import './App.css';
-import {TODO_API} from "./Module/Todo/Constant";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import "./App.scss";
+import { TODO_API } from "./Module/Todo/Constant";
 import axios from "axios";
-import {IResponse} from "./Module/Core/Model/APIModel";
-import {TodoItem} from "./Module/Todo/Component";
-import {ITodo} from "./Module/Todo/Model/DataModel";
-import {selectBoxFilter} from "./Module/Todo/Helper";
-
+import { TodoItem, TodoItemLoading } from "./Module/Todo/Component";
+import { ITodo, ITodoNormalized } from "./Module/Todo/Model/DataModel";
+import { SortType, StatusType } from "./Module/Todo/Model/enum";
+import {
+  normalizer,
+  searchFilterer,
+  sorter,
+  statusFilterer,
+} from "./Module/Todo/Helper";
 
 function App() {
-  const [data, setData] = useState<ITodo[]>([]);
+  const [data, setData] = useState<ITodoNormalized[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<boolean | null>(null);
-  const [selectBoxValue, setSelectBoxValue] = useState<string>('all');
-  const [inputValue, setInputValue] = useState<string>('');
+  const [error, setError] = useState<boolean>(false);
 
-  const getData = (selectedValue: string = 'all', inputSearchValue: string = '' ) => {
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<StatusType>(StatusType.ALL);
+  const [sort, setSort] = useState<SortType>(SortType.UNSORTED);
+
+  const changeStatusTodoToggle = useCallback((id: ITodo["id"]) => {
+    setData((prevState) =>
+      prevState.map((item) => {
+        if (item.id !== id) return item;
+
+        return {
+          ...item,
+          status:
+            item.status === StatusType.PENDING
+              ? StatusType.COMPLETED
+              : StatusType.PENDING,
+        };
+      }),
+    );
+  }, []);
+
+  const getData = (signal: AbortSignal) => {
     setLoading(true);
-    axios.get(TODO_API.GET_TODO_LIST).then((response:IResponse<ITodo[]>) => {
-      setLoading(false);
-      setData(selectBoxFilter(selectedValue, inputSearchValue, response.data));
-    }).catch(() => {
-      setLoading(false);
-      setError(true);
-    })
-  }
+    axios
+      .get<ITodo[]>(TODO_API.GET_TODO_LIST, {
+        signal,
+      })
+      .then(({ data }) => {
+        setLoading(false);
+        setError(false);
+        setData(data.map(normalizer));
+      })
+      .catch(() => {
+        setLoading(false);
+        setError(true);
+        setData([]);
+      });
+  };
+
+  const filteredData = useMemo(() => {
+    return [
+      searchFilterer(search),
+      statusFilterer(status),
+      sorter(sort),
+    ].reduce((preparedData, fn) => fn(preparedData), data);
+  }, [data, status, search, sort]);
+
+  const toggleSort = () => {
+    setSort((prevState) => {
+      if (prevState === SortType.ASC) return SortType.DESC;
+      if (prevState === SortType.DESC) return SortType.UNSORTED;
+      return SortType.ASC;
+    });
+  };
 
   useEffect(() => {
-    getData()
-  }, [])
+    const abortController = new AbortController();
+    getData(abortController.signal);
 
-  function selectBoxHandler(value: string) {
-    getData(value)
-    setSelectBoxValue(value)
+    return () => {
+      abortController.abort();
+    };
+  }, []);
+
+  if (loading) return <TodoItemLoading />;
+
+  if (error) {
+    return <p>Sorry there is an unexpected error please try again later</p>;
   }
 
-  function inputSearchHandler(value: string) {
-    setInputValue(value);
-
-    let timeout: NodeJS.Timeout;
-    const promise = new Promise<void>(resolve => {
-      timeout = setTimeout(() => {
-        resolve();
-      }, 3000)
-    })
-    promise.then(() => {
-      getData(selectBoxValue, value);
-      clearTimeout(timeout);
-    })
-  }
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Sorry there is an unexpected error please try again later</p>;
   return (
     <>
       <h1 className="header">Table of tasks</h1>
       <div className="searchSectionContainer">
         <div className="multiSelectContainer">
-
-          <label>جستجو توسط انتخاب وضعیت</label>
-          <select value={selectBoxValue} onChange={(e) => selectBoxHandler(e.target.value)} className="multiSelect">
-            <option value="all">all</option>
-            <option value="completed">complete</option>
-            <option value="pending">pending</option>
+          <label>جستجو براساس انتخاب وضعیت</label>
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as StatusType)}
+            className="multiSelect"
+          >
+            <option value={StatusType.ALL}>all</option>
+            <option value={StatusType.COMPLETED}>complete</option>
+            <option value={StatusType.PENDING}>pending</option>
           </select>
         </div>
 
-        <input value={inputValue} onChange={(e) => inputSearchHandler(e.target.value)} dir="rtl" className="inputSearch" placeholder="بر اساس عنوان تسک جستجو کنید" />
+        <div className="inputSearchContainer">
+          <label>جستجو براساس عنوان تسک</label>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            dir="rtl"
+            className="inputSearch"
+            placeholder="عنوان تسک "
+          />
+        </div>
       </div>
       <table>
         <thead>
-        <tr>
-          <th>task</th>
-          <th>status</th>
-          <th>id</th>
-        </tr>
+          <tr>
+            <th style={{ cursor: "pointer" }} onClick={toggleSort}>
+              task
+            </th>
+            <th>status</th>
+            <th>id</th>
+          </tr>
         </thead>
         <tbody>
-        {data.map((item) => {
-          return (
-            <tr>
-              <TodoItem item={item} key={item.id} />
-            </tr>
-          )
-        })}
+          {filteredData.map((item) => {
+            return (
+              <TodoItem
+                key={item.id}
+                {...item}
+                changeStatusTodoToggle={changeStatusTodoToggle}
+              />
+            );
+          })}
         </tbody>
       </table>
     </>

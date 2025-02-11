@@ -1,18 +1,33 @@
-import {FC} from "react";
-import {ITodo} from "../../Model/DataModel";
+import {FC, memo} from "react";
+import { ITodo, ITodoNormalized } from "../../Model/DataModel";
+import "./todoItem.scss";
+import { StatusType } from "../../Model/enum";
 
-const TodoItem: FC<todoProps> = ({item} ) => {
-  const {title , id , completed} = item;
+interface ITodoItemProps extends ITodoNormalized {
+  changeStatusTodoToggle: (id: ITodo["id"]) => void;
+}
+
+const TodoItem: FC<ITodoItemProps> = ({
+  title,
+  id,
+  status,
+  changeStatusTodoToggle,
+}) => {
+  const isCompleted = status === StatusType.COMPLETED;
+
   return (
-      <>
-        <td>{title}</td>
-        <td>{completed ? 'Completed' : 'Pending'}</td>
-        <td>{id}</td>
-      </>
-);
-}
+    <tr>
+      <td>{title}</td>
+      <td
+        onClick={() => changeStatusTodoToggle(id)}
+        className={`${isCompleted ? "complete" : "pending"}`}
+      >
+        {isCompleted ? "Completed" : "Pending"}
+      </td>
 
-interface todoProps {
-  item: ITodo
-}
-export default TodoItem;
+      <td>{id}</td>
+    </tr>
+  );
+};
+
+export default memo(TodoItem);
