@@ -122,12 +122,9 @@ function App() {
       <table>
         <thead>
           <tr>
-            <th
-              className="headerTask"
-              onClick={toggleSort}
-            >
+            <th className="headerTask" onClick={toggleSort}>
               <p>Task</p>
-              <span className='tooltipText'>مرتب کردن بر اساس حروف الفبا</span>
+              <span className="tooltipText">مرتب کردن بر اساس حروف الفبا</span>
               {sort === SortType.DESC ? (
                 <img
                   src="/arrow-up.png"
