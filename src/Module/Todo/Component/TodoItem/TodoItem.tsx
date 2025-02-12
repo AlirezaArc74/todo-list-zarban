@@ -20,8 +20,9 @@ const TodoItem: FC<ITodoItemProps> = ({
       <td>{title}</td>
       <td
         onClick={() => changeStatusTodoToggle(id)}
-        className={`${isCompleted ? "complete" : "pending"}`}
+        className={`${isCompleted ? "complete" : "pending"} status`}
       >
+        <span className="tooltipText">وضعیت را تفییر دهید</span>
         {isCompleted ? "Completed" : "Pending"}
       </td>
 

@@ -6,3 +6,30 @@
   cursor: pointer;
   background-color: yellow;
 }
+
+
+.status {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  .tooltipText {
+    visibility: hidden;
+    width: 120px;
+    background-color: lightgoldenrodyellow;
+    color: black;
+    text-align: center;
+    padding: 5px 0;
+    font-size: 12px;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -100px;
+  }
+}
+.status:hover .tooltipText {
+  visibility: visible;
+}

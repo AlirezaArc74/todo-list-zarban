@@ -19,6 +19,32 @@ table {
   justify-content: center;
 }
 
+.headerTask {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  .tooltipText {
+    visibility: hidden;
+    width: 220px;
+    background-color: lightgoldenrodyellow;
+    color: black;
+    text-align: center;
+    padding: 5px 0;
+    font-size: 12px;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -100px;
+  }
+}
+.headerTask:hover .tooltipText {
+  visibility: visible;
+}
+
 .searchSectionContainer {
   display: flex;
   margin: 10px;

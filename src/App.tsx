@@ -65,9 +65,14 @@ function App() {
 
   const toggleSort = () => {
     setSort((prevState) => {
-      if (prevState === SortType.ASC) return SortType.DESC;
-      if (prevState === SortType.DESC) return SortType.UNSORTED;
-      return SortType.ASC;
+      switch (prevState) {
+        case SortType.ASC:
+          return SortType.DESC;
+        case SortType.DESC:
+          return SortType.UNSORTED;
+        default:
+          return SortType.ASC;
+      }
     });
   };
 
@@ -117,11 +122,30 @@ function App() {
       <table>
         <thead>
           <tr>
-            <th style={{ cursor: "pointer" }} onClick={toggleSort}>
-              task
+            <th
+              className="headerTask"
+              onClick={toggleSort}
+            >
+              <p>Task</p>
+              <span className='tooltipText'>مرتب کردن بر اساس حروف الفبا</span>
+              {sort === SortType.DESC ? (
+                <img
+                  src="/arrow-up.png"
+                  alt={"arrow-up"}
+                  width={20}
+                  height={20}
+                />
+              ) : sort === SortType.ASC ? (
+                <img
+                  src="/arrow-down.png"
+                  alt={"arrow-down"}
+                  width={20}
+                  height={20}
+                />
+              ) : null}
             </th>
-            <th>status</th>
-            <th>id</th>
+            <th>Status</th>
+            <th>Id</th>
           </tr>
         </thead>
         <tbody>
