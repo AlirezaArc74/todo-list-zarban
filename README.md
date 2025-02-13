@@ -19,6 +19,10 @@ yarn
 
 yarn start
 
+NOTE:
+Please create .env file and put the following url on it:
+REACT_APP_API_URL=https://jsonplaceholder.typicode.com
+
 ## Tech Stack
 
 - **React**
